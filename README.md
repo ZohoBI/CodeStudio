@@ -7,8 +7,8 @@ Repository Structure
 
 This repository is organized into the following folders:
 
-* DataTransformation: Data transformation samples are present in this folder.
-* MLModel: Machine Learning samples are present in this folder.
+* [DataTransformation](DataTransformation): Data transformation samples are present in this folder.
+* [MLModel](MLModel): Machine Learning samples are present in this folder.
 
 Sample Code
 
