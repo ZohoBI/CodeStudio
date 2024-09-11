@@ -1,18 +1,16 @@
-# Code Studio Samples
-### Welcome to the Code Studio Samples repository!
+# Code Studio
+### Welcome to Code Studio repository!
 
-This repository contains a collection of sample code snippets for Code Studio feature in Zoho Analytics . The samples are designed to help developers reference and to provide a starting point for their own projects.
+This repository contains a collection of code snippets for Code Studio feature in Zoho Analytics. These are designed to as a reference for developers.
 
 Repository Structure
 
 This repository is organized into the following folders:
 
-* [DataTransformation](DataTransformation): Data transformation samples are present in this folder.
-* [MLModel](MLModel): Machine Learning samples are present in this folder.
+* [DataTransformation](DataTransformation): Data transformation code snippets are present in this folder.
+* [MLModel](MLModel): Machine Learning code snippets are present in this folder.
 
-Sample Code
-
-Each sample code snippet or project includes:
+Each code snippet includes:
 
 * A brief description of the code and its purpose in README.md file and code to use in Code Studio.
 
