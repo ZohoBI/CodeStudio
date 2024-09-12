@@ -22,10 +22,11 @@ class MLModel:
         self.ms = ms
 
     def fit(self):
-        df: pd.DataFrame = self.dt.fetch_tabledata_as_DataFrame("Ticket Escalation Train Data",
-                                                                ['TicketID', 'IssueType', 'Priority', 'ResponseTime',
+        table_name = "Ticket Escalation Train Data"
+        column_names = ['TicketID', 'IssueType', 'Priority', 'ResponseTime',
                                                                  'ResolutionTime',
-                                                                 'CustomerType', 'TicketAge', 'Escalated'], "")
+                                                                 'CustomerType', 'TicketAge', 'Escalated']
+        df: pd.DataFrame = self.dt.fetch_tabledata_as_DataFrame(table_name, column_names)
 
         cust_type_unique = df['CustomerType'].unique()
         cust_type_unique
@@ -55,7 +56,7 @@ class MLModel:
         params = {
             'objective': 'binary',  # For binary classification
             'boosting_type': 'gbdt',  # Gradient Boosting Decision Tree
-            'metric': ['binary_logloss', 'auc'],  # Metrics to evaluate
+            'metric': ['binary_logloss', 'auc'],  # Metrics for evaluation
             'num_leaves': 31,  # Maximum number of leaves in one tree
             'learning_rate': 0.05,  # Learning rate
             'feature_fraction': 0.9,  # Fraction of features to use for building each tree
@@ -114,14 +115,17 @@ class MLModel:
         self.log.INFO("Training Completed...Procced to Predict")
 
     def predict(self):
+        table_name = "Ticket Escalation Validation Data"
+        column_names = ['TicketID', 'IssueType', 'Priority', 'ResponseTime',
+                                                                 'ResolutionTime',
+                                                                 'CustomerType', 'TicketAge', 'Escalated']
+        final_table_name = "EscalationPredictedData"
+        import_type = "truncateadd"
         # Path to the .pkl file
         pkl_file_path = self.ms.get_model_path('lgbclassifier')
         # Load the model from the .pkl file
         model = joblib.load(pkl_file_path)
-        df: pd.DataFrame = self.dt.fetch_tabledata_as_DataFrame("Ticket Escalation Validation Data",
-                                                                ['TicketID', 'IssueType', 'Priority', 'ResponseTime',
-                                                                 'ResolutionTime',
-                                                                 'CustomerType', 'TicketAge', 'Escalated'], "")
+        df: pd.DataFrame = self.dt.fetch_tabledata_as_DataFrame(table_name, column_names)
 
         cust_type_unique = df['CustomerType'].unique()
         # dropping unnecessary columns
@@ -162,4 +166,4 @@ class MLModel:
         predicted_df.drop(cust_type_unique, axis=1, inplace=True)
 
         self.log.INFO(predicted_df)
-        self.dt.upload_tabledata_from_DataFrame("EscalationPredictedData", predicted_df, {"importType": "truncateadd"})
+        self.dt.upload_tabledata_from_DataFrame(final_table_name, predicted_df, {"importType": import_type})

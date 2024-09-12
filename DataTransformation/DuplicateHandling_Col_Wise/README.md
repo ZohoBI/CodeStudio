@@ -9,3 +9,20 @@ This script removes duplicate records .
 4. Set the `import_type` variable to the import type for the upload (default: "truncateadd")
 5. Specify the columns in the df.drop_duplicates(subset=['brand', 'style'], keep='last') method for which duplicates will be removed based on those columns.
 6. Set `keep='last'` if you want to retain the last record among duplicates, or set `keep='first'` if you want to keep the first duplicate record.
+
+
+INPUT DATA:
+
+| Brand  | Style | Rating |
+|--------|-------|--------|
+| Brand1 | bowl  | 2.085  |
+| Brand2 | cup   | 3.430  |
+| Brand1 | Bowl  | 4.434  |
+
+
+OUTPUT DATA:
+
+| Brand  | Style | Rating |
+|--------|-------|--------|
+| Brand2 | cup   | 3.430  |
+| Brand1 | Bowl  | 4.434  |

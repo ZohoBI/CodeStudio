@@ -4,6 +4,7 @@ from ModelStorage import ModelStorage
 import pandas as pd
 import numpy as np
 from datetime import datetime, date
+#need to import library
 import holidays
 import calendar
 from xgboost import XGBRegressor
@@ -26,8 +27,9 @@ class MLModel:
         self.ms = ms
 
     def fit(self):
-        df: pd.DataFrame = self.dt.fetch_tabledata_as_DataFrame("Inventory Demand Train Data",
-                                                                ["date", "store", "item", "sales"], "")
+        table_name = "Inventory Demand Train Data"
+        column_names =   ["date", "store", "item", "sales"]
+        df: pd.DataFrame = self.dt.fetch_tabledata_as_DataFrame(table_name, column_names)
 
         df['date'] = pd.to_datetime(df['date'])
 
@@ -94,13 +96,17 @@ class MLModel:
         self.log.INFO("Training Completed...Procced to Predict")
 
     def predict(self):
+        table_name = "Inventory Demand Validation Data"
+        column_names =  ["id", "date", "store", "item"]
+        final_table_name = "Forecasted Inventory Demand Data"
+        import_type = "truncateadd"
         # Path to the .pkl file
         pkl_file_path = self.ms.get_model_path('XGBRegressorIVDemand')
         # Load the model from the .pkl file
         model = joblib.load(pkl_file_path)
 
-        df: pd.DataFrame = self.dt.fetch_tabledata_as_DataFrame("Inventory Demand Validation Data",
-                                                                ["id", "date", "store", "item"], "")
+        df: pd.DataFrame = self.dt.fetch_tabledata_as_DataFrame(table_name, column_names)
+
 
         df['date'] = pd.to_datetime(df['date'])
 
@@ -140,5 +146,5 @@ class MLModel:
         output[['id', 'store', 'item', 'month', 'Forecasted Demand']] = output[
             ['id', 'store', 'item', 'month', 'Forecasted Demand']].astype('float')
 
-        self.dt.upload_tabledata_from_DataFrame("Forecasted Inventory Demand Data", output,
-                                                {"importType": "truncateadd"})
+        self.dt.upload_tabledata_from_DataFrame(final_table_name, output,
+                                                {"importType": import_type})

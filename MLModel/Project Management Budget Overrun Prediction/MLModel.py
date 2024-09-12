@@ -22,15 +22,16 @@ class MLModel:
         self.ms = ms
 
     def fit(self):
-        df: pd.DataFrame = self.dt.fetch_tabledata_as_DataFrame("Project Management Data",
-                                                                ['Budget', 'NumAgents', 'ProjectType', 'Location',
+        table_name = "Project Management Data"
+        column_names = ['Budget', 'NumAgents', 'ProjectType', 'Location',
                                                                  'ClientType',
                                                                  'PlannedHours', 'PlannedDays', 'ActualHours',
                                                                  'ActualDays', 'NumIssues',
                                                                  'ProjectDifficulty', 'Urgency', 'ScopeChanges',
                                                                  'TeamExperienceLevel',
                                                                  'VendorReliabilityCategory', 'MarketFluctuation',
-                                                                 'BudgetOverrun'], "")
+                                                                 'BudgetOverrun']
+        df: pd.DataFrame = self.dt.fetch_tabledata_as_DataFrame(table_name, column_names)
         # df.isna().sum()
 
         # df.duplicated().sum()
@@ -106,19 +107,22 @@ class MLModel:
         self.log.INFO("Training Completed...Procced to Predict")
 
     def predict(self):
-        # Path to the .pkl file
-        pkl_file_path = self.ms.get_model_path('lgbBudgetOverrunClassifier')
-        # Load the model from the .pkl file
-        model = joblib.load(pkl_file_path)
-        df: pd.DataFrame = self.dt.fetch_tabledata_as_DataFrame("Project Management Validation Data",
-                                                                ['Budget', 'NumAgents', 'ProjectType', 'Location',
+        table_name = "Project Management Validation Data"
+        column_names = ['Budget', 'NumAgents', 'ProjectType', 'Location',
                                                                  'ClientType',
                                                                  'PlannedHours', 'PlannedDays', 'ActualHours',
                                                                  'ActualDays', 'NumIssues',
                                                                  'ProjectDifficulty', 'Urgency', 'ScopeChanges',
                                                                  'TeamExperienceLevel',
                                                                  'VendorReliabilityCategory', 'MarketFluctuation',
-                                                                 'BudgetOverrun'], "")
+                                                                 'BudgetOverrun']
+        final_table_name = "ProjectMgmtBudgetOverrunPred"
+        import_type = "truncateadd"
+        # Path to the .pkl file
+        pkl_file_path = self.ms.get_model_path('lgbBudgetOverrunClassifier')
+        # Load the model from the .pkl file
+        model = joblib.load(pkl_file_path)
+        df: pd.DataFrame = self.dt.fetch_tabledata_as_DataFrame(table_name, column_names)
 
         df.drop(['ProjectType', 'Location', 'ClientType'], axis=1, inplace=True)
         encoding_order = ['Low', 'Medium', 'High']
@@ -148,4 +152,4 @@ class MLModel:
             lambda x: 'Yes' if x == 1 else 'No').astype('string')
         self.log.INFO(output)
 
-        self.dt.upload_tabledata_from_DataFrame("ProjectMgmtBudgetOverrunPred", output, {"importType": "truncateadd"})
+        self.dt.upload_tabledata_from_DataFrame(final_table_name, output, {"importType": import_type})

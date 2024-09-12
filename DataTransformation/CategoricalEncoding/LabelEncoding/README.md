@@ -10,3 +10,24 @@ This script converts the categorical data into numerical data using `LabelEncodi
 5. Replace the `Fruit` column with the name of your categorical column in the fruit_encoder.fit_transform(df['Fruit']) .
 
 
+INPUT DATA:
+
+| Fruit  | Color  | Price |
+|--------|--------|-------|
+| Apple  | Red    | 0.94  |
+| Date   | Yellow | 0.90  |
+| Banana | Red    | 0.90  |
+| Apple  | Red    | 2.24  |
+| Cherry | Brown  | 2.18  |
+
+OUTPUT DATA:
+
+| Fruit  | Color  | Price | Fruit_Encoded |
+|--------|--------|-------|---------------|
+| Apple  | Red    | 0.94  | 0             |
+| Date   | Yellow | 0.90  | 3             |
+| Banana | Red    | 0.90  | 1             |
+| Apple  | Red    | 2.24  | 0             |
+| Cherry | Brown  | 2.18  | 2             |
+
+

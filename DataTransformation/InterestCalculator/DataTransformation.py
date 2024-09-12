@@ -70,6 +70,9 @@ class DataTransformation:
         # Apply the calculation function
         df = calculate_amounts(df)
 
+        df = df.sort_values(by=['Entity', 'Year']).reset_index(drop=True)
+
+
         # Upload the processed data to Zoho Analytics table 'data_processed'
         self.dt.upload_tabledata_from_DataFrame(final_table_name, df, {"importType": import_type})
 

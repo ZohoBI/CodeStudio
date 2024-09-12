@@ -22,12 +22,14 @@ class MLModel:
         self.ms = ms
 
     def fit(self):
-        df: pd.DataFrame = self.dt.fetch_tabledata_as_DataFrame("CRM Deal Prediction Train Data",
-                                                                ['Deal ID', 'Amount', 'Deal Name', 'Closing Date',
+        table_name = "CRM Deal Prediction Train Data"
+        column_names =  ['Deal ID', 'Amount', 'Deal Name', 'Closing Date',
                                                                  'Stage', 'Type',
                                                                  'Probability (%)', 'Expected Revenue', 'Lead Source',
                                                                  'Created Time',
-                                                                 'Modified Time', 'Sales Cycle Duration'], "")
+                                                                 'Modified Time', 'Sales Cycle Duration']
+        df: pd.DataFrame = self.dt.fetch_tabledata_as_DataFrame(table_name, column_names)
+
 
         df.drop(['Deal ID', 'Deal Name', 'Created Time', 'Modified Time', 'Closing Date'], axis=1, inplace=True)
 
@@ -113,17 +115,21 @@ class MLModel:
         self.log.INFO("Training Completed...Procced to Predict")
 
     def predict(self):
+        table_name = "CRM Deal Prediction Validation Data"
+        column_names =  ['Deal ID', 'Amount', 'Deal Name', 'Closing Date',
+                                                                 'Stage', 'Type',
+                                                                 'Probability (%)', 'Expected Revenue', 'Lead Source',
+                                                                 'Created Time',
+                                                                 'Modified Time', 'Sales Cycle Duration']
+        final_table_name = "CRM Deal Predicted Data"
+        import_type = "truncateadd"
         # Path to the .pkl file
         pkl_file_path = self.ms.get_model_path('lgb_clf_deal_pred')
         # Load the model from the .pkl file
         model = joblib.load(pkl_file_path)
 
-        df: pd.DataFrame = self.dt.fetch_tabledata_as_DataFrame("CRM Deal Prediction Validation Data",
-                                                                ['Deal ID', 'Amount', 'Deal Name', 'Closing Date',
-                                                                 'Stage', 'Type',
-                                                                 'Probability (%)', 'Expected Revenue', 'Lead Source',
-                                                                 'Created Time',
-                                                                 'Modified Time', 'Sales Cycle Duration'], "")
+        df: pd.DataFrame = self.dt.fetch_tabledata_as_DataFrame(table_name, column_names)
+
 
         df.drop(['Deal ID', 'Deal Name', 'Created Time', 'Modified Time', 'Closing Date'], axis=1, inplace=True)
 
@@ -195,4 +201,4 @@ class MLModel:
         # You can use the loaded model to make predictions or evaluate it
         # Example usage: Making predictions with the loaded model
         # Assuming you have test data in the variable 'X_test'
-        self.dt.upload_tabledata_from_DataFrame("CRM Deal Predicted Data", output, {"importType": "truncateadd"})
+        self.dt.upload_tabledata_from_DataFrame(final_table_name, output, {"importType": import_type})

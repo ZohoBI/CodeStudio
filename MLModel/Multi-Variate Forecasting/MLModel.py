@@ -1,3 +1,5 @@
+from weakref import finalize
+
 from DataTransformationUtil import DataTransformationUtil
 from ZohoAnalytics import ZohoAnalytics
 from ModelStorage import ModelStorage
@@ -23,18 +25,19 @@ class MLModel:
         self.ms = ms
 
     def fit(self):
-        df: pd.DataFrame = self.dt.fetch_tabledata_as_DataFrame("Revenue Data", ['Date', 'Amount', 'CROSS SELL', 'NEW',
-                                                                                 'REACTIVATE', 'RECURRING', 'REFUND',
-                                                                                 'UPGRADE', 'OFFLINE', 'ONLINE',
-                                                                                 'Direct', 'Reseller', 'ANZ', 'APAC',
-                                                                                 'Antarctica',
-                                                                                 'Brazil', 'Canada', 'China',
-                                                                                 'ConEurope', 'India', 'India Central',
-                                                                                 'India East', 'India North',
-                                                                                 'India South',
-                                                                                 'India West', 'Japan', 'LATAM', 'MEA',
-                                                                                 'Others', 'UK', 'US', 'US Central',
-                                                                                 'US East', 'US MST', 'US West'], "")
+        table_name = "Revenue Data"
+        column_names = ['Date', 'Amount', 'CROSS SELL', 'NEW',                                                                                 'REACTIVATE', 'RECURRING', 'REFUND',
+                                                             'UPGRADE', 'OFFLINE', 'ONLINE',
+                                                             'Direct', 'Reseller', 'ANZ', 'APAC',
+                                                             'Antarctica',
+                                                             'Brazil', 'Canada', 'China',
+                                                             'ConEurope', 'India', 'India Central',
+                                                             'India East', 'India North',
+                                                             'India South',
+                                                             'India West', 'Japan', 'LATAM', 'MEA',
+                                                             'Others', 'UK', 'US', 'US Central',
+                                                             'US East', 'US MST', 'US West']
+        df: pd.DataFrame = self.dt.fetch_tabledata_as_DataFrame(table_name, column_names)
 
         # self.log.INFO(df.shape)
         # self.log.INFO(df)
@@ -102,20 +105,22 @@ class MLModel:
         self.log.INFO("Training Completed...Procced to Predict")
 
     def predict(self):
-        # Path to the .pkl file
+        table_name = "Revenue Data"
+        column_names = ['Date', 'Amount', 'CROSS SELL', 'NEW', 'REACTIVATE',
+                                                             'RECURRING', 'REFUND', 'UPGRADE', 'OFFLINE', 'ONLINE',
+                                                             'Direct', 'Reseller', 'ANZ', 'APAC', 'Antarctica',
+                                                             'Brazil', 'Canada', 'China', 'ConEurope', 'India',
+                                                             'India Central', 'India East', 'India North',
+                                                             'India South', 'India West', 'Japan', 'LATAM', 'MEA',
+                                                             'Others', 'UK', 'US', 'US Central', 'US East',
+                                                             'US MST', 'US West']
+        final_table_name = "ForecastedData"
+        import_type = "truncateadd"
+         # Path to the .pkl file
         pkl_file_path = self.ms.get_model_path('forecast_var_model')
         # Load the model from the .pkl file
         model = joblib.load(pkl_file_path)
-        df: pd.DataFrame = self.dt.fetch_tabledata_as_DataFrame("Revenue Data",
-                                                                ['Date', 'Amount', 'CROSS SELL', 'NEW', 'REACTIVATE',
-                                                                 'RECURRING', 'REFUND', 'UPGRADE', 'OFFLINE', 'ONLINE',
-                                                                 'Direct', 'Reseller', 'ANZ', 'APAC', 'Antarctica',
-                                                                 'Brazil', 'Canada', 'China', 'ConEurope', 'India',
-                                                                 'India Central', 'India East', 'India North',
-                                                                 'India South', 'India West', 'Japan', 'LATAM', 'MEA',
-                                                                 'Others', 'UK', 'US', 'US Central', 'US East',
-                                                                 'US MST', 'US West']
-                                                                , "")
+        df: pd.DataFrame = self.dt.fetch_tabledata_as_DataFrame(table_name, column_names)
 
         df['Date'] = pd.to_datetime(df['Date'])
 
@@ -158,4 +163,4 @@ class MLModel:
         # You can use the loaded model to make predictions or evaluate it
         # Example usage: Making predictions with the loaded model
         # Assuming you have test data in the variable 'X_test'
-        self.dt.upload_tabledata_from_DataFrame("ForecastedData", predicted_df, {"importType": "truncateadd"})
+        self.dt.upload_tabledata_from_DataFrame(final_table_name, predicted_df, {"importType": import_type})

@@ -8,3 +8,18 @@ This script handles the missing data based on K-Nearest Neighbors (KNN)
 3. Set the final_table_name variable to the name of the table where the data, with missing values replaced, will be uploaded.
 4. Set the `import_type` variable to the import type for the upload (default: "truncateadd")
 
+
+INPUT DATA:
+
+| ID  | Name  | Department | Salary | Age |
+|-----|-------|------------|--------|-----|
+| 14  | Bob   | Finance    | 60000  | 34  |
+| 22  | Alice | IT         | 70000  |     |
+
+
+OUTPUT DATA:
+
+| ID  | Name  | Department | Salary | Age |
+|-----|-------|------------|--------|-----|
+| 14  | Bob   | Finance    | 60000  | 34  |
+| 22  | Alice | IT         | 70000  | 32  |

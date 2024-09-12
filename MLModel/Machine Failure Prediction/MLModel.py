@@ -35,12 +35,13 @@ class MLModel:
         self.ms = ms
 
     def fit(self):
-        data: pd.DataFrame = self.dt.fetch_tabledata_as_DataFrame("Machine Failure Prediction Train",
-                                                                  ['UDI', 'Product ID', 'Type', 'Air temperature [K]',
+        table_name = "Machine Failure Prediction Train"
+        column_names = ['UDI', 'Product ID', 'Type', 'Air temperature [K]',
                                                                    'Process temperature [K]',
                                                                    'Rotational speed [rpm]', 'Torque [Nm]',
                                                                    'Tool wear [min]', 'Target',
-                                                                   'Failure Type'], "")
+                                                                   'Failure Type']
+        data: pd.DataFrame = self.dt.fetch_tabledata_as_DataFrame(table_name, column_names)
 
         data = data.drop('Product ID', axis=1)
 
@@ -235,16 +236,20 @@ class MLModel:
         self.log.INFO("Training Completed...Procced to Predict")
 
     def predict(self):
+        table_name = "Machine Failure Prediction Validation"
+        column_names = ['UDI', 'Product ID', 'Type', 'Air temperature [K]',
+                                                                   'Process temperature [K]',
+                                                                   'Rotational speed [rpm]', 'Torque [Nm]',
+                                                                   'Tool wear [min]', 'Target',
+                                                                   'Failure Type']
+        final_table_name = "Predicted Machine Failure Data"
+        import_type = "truncateadd"
         # Path to the .pkl file
         pkl_file_path = self.ms.get_model_path('MachineFailurePred')
         # Load the model from the .pkl file
         model = joblib.load(pkl_file_path)
-        data: pd.DataFrame = self.dt.fetch_tabledata_as_DataFrame("Machine Failure Prediction Validation",
-                                                                  ['UDI', 'Product ID', 'Type', 'Air temperature [K]',
-                                                                   'Process temperature [K]',
-                                                                   'Rotational speed [rpm]', 'Torque [Nm]',
-                                                                   'Tool wear [min]', 'Target',
-                                                                   'Failure Type'], "")
+        data: pd.DataFrame = self.dt.fetch_tabledata_as_DataFrame(table_name, column_names)
+
 
         data = data.drop('Product ID', axis=1)
 
@@ -285,4 +290,4 @@ class MLModel:
         output = pd.concat([id, output], axis=1)
         self.log.INFO(output)
 
-        self.dt.upload_tabledata_from_DataFrame("Predicted Machine Failure Data", output, {"importType": "truncateadd"})
+        self.dt.upload_tabledata_from_DataFrame(final_table_name, output, {"importType": import_type})
